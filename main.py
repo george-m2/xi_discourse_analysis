@@ -3,6 +3,7 @@ import time
 import random
 import pandas as pd
 import json
+import os
 from bs4 import BeautifulSoup
 
 # ---------------------------------------------------------
@@ -120,8 +121,14 @@ def extract_speech_text(url):
 # ---------------------------------------------------------
 if __name__ == "__main__":
     
-    # 1. SET YOUR TARGET PAGES HERE (e.g., 1486 for the whole database)
-    TOTAL_PAGES_TO_SCRAPE = 10 
+    # 1. Set target pages (overridable via TOTAL_PAGES_TO_SCRAPE env var)
+    total_pages_env = os.getenv("TOTAL_PAGES_TO_SCRAPE", "10")
+    try:
+        TOTAL_PAGES_TO_SCRAPE = int(total_pages_env)
+    except ValueError:
+        TOTAL_PAGES_TO_SCRAPE = 10
+    if TOTAL_PAGES_TO_SCRAPE < 1:
+        TOTAL_PAGES_TO_SCRAPE = 1
     
     urls_to_scrape = harvest_links_via_api(max_pages=TOTAL_PAGES_TO_SCRAPE)
     

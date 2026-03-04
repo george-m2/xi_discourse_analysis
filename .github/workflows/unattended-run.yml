@@ -2,6 +2,11 @@ name: scrape-xi-speeches-unattended
 
 on:
   workflow_dispatch:
+    inputs:
+      total_pages_to_scrape:
+        description: "Number of result pages to scrape"
+        required: true
+        default: "10"
 
 permissions:
   contents: read
@@ -30,6 +35,8 @@ jobs:
           pip install requests beautifulsoup4 pandas
 
       - name: Run scraper
+        env:
+          TOTAL_PAGES_TO_SCRAPE: ${{ github.event.inputs.total_pages_to_scrape }}
         run: python main.py
 
       - name: Upload dataset artifact
