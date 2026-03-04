@@ -1,4 +1,4 @@
-name: Unattended Data Run
+name: scrape-xi-speeches-unattended
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Initial setup
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
