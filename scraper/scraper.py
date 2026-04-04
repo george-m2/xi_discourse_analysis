@@ -7,11 +7,12 @@ import pandas as pd
 import json
 from bs4 import BeautifulSoup
 
-TOTAL_PAGES_TO_SCRAPE = 1486 
+TOTAL_PAGES_TO_SCRAPE = 1486 # as of June 2024
 OUTPUT_FILE = "master_xi_speeches.csv"
 PHASE1_CACHE = "phase1_checkpoint.json"
 
 # avoid detection by rotating user agents
+# https://useragents.io/
 USER_AGENTS = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
@@ -23,7 +24,6 @@ USER_AGENTS = [
 session = requests.Session()
 
 def harvest_links_via_api(max_pages):
-    print(f"\n--- Phase 1: Harvesting API Links (Target: {max_pages} pages) ---")
     api_url = "https://jhsjk.people.cn/testnew/result"
     # caching in case we get 401'd 
     if os.path.exists(PHASE1_CACHE):
@@ -64,7 +64,7 @@ def harvest_links_via_api(max_pages):
                 response = session.get(api_url, params=params, headers=stealth_headers, timeout=15)
                 
                 if response.status_code != 200:
-                    print(f"[Warning] Server returned {response.status_code}. Retrying in 15 seconds...")
+                    print(f"Server returned {response.status_code}. Retrying in 15 seconds...")
                     time.sleep(15)
                     continue
                 
@@ -73,14 +73,14 @@ def harvest_links_via_api(max_pages):
                 except json.JSONDecodeError:
                     text_content = response.text.strip("'\" \n\r")
                     if not text_content: 
-                        raise ValueError("Server returned a completely blank response.")
+                        raise ValueError("Server returned a blank response. Likely China rate-limiting us...")
                     data = json.loads(text_content)
 
                 if data.get('status') == 'success':
                     article_list = data.get('list', [])
                     
                     if not article_list:
-                        print("\nReached the absolute end of the database.")
+                        print("\nEnd of the database(?).")
                         return list(set(all_article_links))
                         
                     for article in article_list:
@@ -102,23 +102,22 @@ def harvest_links_via_api(max_pages):
                     time.sleep(random.uniform(2.5, 4.5))
                     
                     if page % 30 == 0:
-                        break_time = random.uniform(60, 120)
-                        print(f"\n[Stealth] Taking a {int(break_time)} second coffee break to fool the firewall...")
+                        break_time = random.uniform(60, 120) # take a  break (randint) every 30 pages to avoid detection
+                        print(f"\nTaking a {int(break_time)} second break so I don't get IP banned again...")
                         time.sleep(break_time)
-                        
                     break
                 
                 else:
-                    print(f"API returned an unexpected status. Retrying in 15 seconds...")
+                    print(f"API returned unexpected. Retrying in 15 seconds...")
                     time.sleep(15)
                     
             except Exception as e:
                 print(f"[Attempt {attempt + 1}/{max_retries}] Failed on page {page}: {e}")
                 if attempt < max_retries - 1:
-                    print("Sleeping for 15 seconds for the firewall to reset...")
+                    print("Sleeping for 15 (fixed) seconds for the endpoint to forget about us...")
                     time.sleep(15)
                 else:
-                    print(f"CRITICAL: Failed to get page {page} after {max_retries} attempts.")
+                    print(f"Failed to get page {page} after {max_retries} attempts. Skipping to next page")
                     return list(set(all_article_links))
             
     return list(set(all_article_links))
@@ -163,7 +162,6 @@ def extract_speech_text(url):
             'text': full_text
         }
     except Exception as e:
-        print(f"\n[Error Extracting] {url}: {e}")
         return None
 
 if __name__ == "__main__":
@@ -173,25 +171,26 @@ if __name__ == "__main__":
     scraped_urls = set()
     file_exists = os.path.exists(OUTPUT_FILE)
     
+    # checkpointing in case we get 401'd or Azure shuts off VM 
     if file_exists:
         try:
             df_existing = pd.read_csv(OUTPUT_FILE)
             if 'url' in df_existing.columns:
                 scraped_urls = set(df_existing['url'].tolist())
-                print(f"\n[Checkpoint Found] Discovered existing CSV. Skipping {len(scraped_urls)} previously downloaded speeches.")
+                print(f"\n[Checkpoint Found] Skipping {len(scraped_urls)} previously downloaded speeches.")
         except Exception as e:
-            print(f"\n[Warning] Could not read existing CSV for checkpointing: {e}")
+             None
             
     urls_to_scrape = [url for url in all_urls if url not in scraped_urls]
     total_remaining = len(urls_to_scrape)
     
     if total_remaining == 0:
-        print("\nAll URLs have already been scraped")
+        print("\no work left to do")
         exit()
         
     print(f"\n--- Extracting {total_remaining} speeches ---")
     
-    start_time_phase2 = time.time()
+    start_time = time.time()
     
     with open(OUTPUT_FILE, 'a', newline='', encoding='utf-8-sig') as f:
         fieldnames = ['publication', 'title', 'url', 'text']
@@ -208,16 +207,15 @@ if __name__ == "__main__":
                 f.flush()
             
             current_item = index + 1
-            elapsed_time = time.time() - start_time_phase2
+            elapsed_time = time.time() - start_time
             avg_time_per_url = elapsed_time / current_item
             eta_seconds = int(avg_time_per_url * (total_remaining - current_item))
             eta_hours, remainder = divmod(eta_seconds, 3600)
             eta_mins, eta_secs = divmod(remainder, 60)
-            
-            time_str = f"{eta_hours}h {eta_mins}m {eta_secs}s" if eta_hours > 0 else f"{eta_mins}m {eta_secs}s"
-            
-            print(f"[{current_item}/{total_remaining}] Saved {url.split('/')[-1]} -> ETA: {time_str}")
-                
+
+            # TODO: make this not look like this. TQDM is def the way to go but ???
+            time_str = f"{eta_hours}h {eta_mins}m {eta_secs}s" if eta_hours > 0 else f"{eta_mins}m {eta_secs}s" # only show hours if we have more than 1 hour remaining
+            print(f"[{current_item}/{total_remaining}] Saved {url.split('/')[-1]} -> ETA: {time_str}") # last part of url is the article_id which is unique and serves as a good identifier for logging
             time.sleep(random.uniform(1.5, 3.5)) 
 
-    print(f"\nSuccess! All remaining {total_remaining} speeches downloaded to {OUTPUT_FILE}.")
+    print(f"\n{total_remaining} speeches downloaded to {OUTPUT_FILE}.")
