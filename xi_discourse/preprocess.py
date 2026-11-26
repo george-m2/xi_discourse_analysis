@@ -1,24 +1,4 @@
-"""Corpus construction: cleaning, de-duplication, sentence splitting, tokenizing.
-
-Fixes four defects in the original pipeline:
-
-1. BYLINE LEAKAGE. Xinhua bylines -- （新华社塔什干6月23日电 记者骆珺）-- appear in
-   7,986 of 14,545 documents. Stripping only non-Chinese characters glued
-   journalist names into the vocabulary (e.g. 杜尚泽蒋 sat at cosine 0.58 from
-   安全 in the original model).
-
-2. IN-DOCUMENT DUPLICATION. The scraper collects both a summary <p> and the body
-   paragraphs, so ~45% of sentence content is repeated within a document,
-   affecting 94% of documents. This double-counts co-occurrences for the
-   duplicated span and inflates the token total.
-
-3. NO SENTENCE BOUNDARIES. The original stripped all punctuation before
-   segmenting, so jieba segmented across sentence boundaries (producing junk
-   tokens such as 就实, 这步, 以守, 心政) and Word2Vec's window slid across whole
-   871-token documents rather than stopping at sentence edges.
-
-4. SINGLE-CHARACTER FILTER. `len(t) > 1` silently removed 党 (party) -- the
-   central ideological term -- from the model entirely.
+"""Basic cleaning of corpus. See README
 """
 from __future__ import annotations
 

@@ -1,15 +1,4 @@
-"""Figures for the paper. APA style, 600 DPI, sized for Word at 1in margins.
-
-Design constraints specific to this deliverable:
-
-* Print-safe. Conference proceedings are often printed in greyscale, so colour
-  never carries identity alone: every point is directly labelled and each
-  discourse field also has its own marker shape.
-* CVD-safe. The categorical palette passes lightness-band, chroma-floor,
-  adjacent-pair CVD separation (worst adjacent dE 11.6, protan) and
-  normal-vision floor checks. The orange sits below 3:1 contrast on white,
-  which is why direct labels are mandatory rather than optional.
-* One measure per axis. No dual-axis charts anywhere.
+"""Supplementary figures. See 'analysis.ipynb'
 """
 from __future__ import annotations
 

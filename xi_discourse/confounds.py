@@ -1,26 +1,13 @@
-"""Confound controls for the governance-security link.
-
-Two threats can produce a spurious 治理-安全 association:
-
-A. POLYSEMY OF 治理. In this corpus 治理 carries two senses -- political
+"""Controlling for the governance-security link.
+Controlling for:
+POLYSEMY OF 治理. In this corpus 治理 carries two senses political
    governance (国家治理, 社会治理) and environmental remediation (环境治理,
    水污染治理). In the original model the nearest neighbours of 治理 were
    dominated by the second sense (护岸 revetment, 河势 river regime, 风沙源
-   sandstorm source, 岱海 Lake Dai). A study about political governance cannot
-   rest on a vector that mostly encodes river management.
-
-B. POLYSEMY OF 安全. 安全 spans regime security (国家安全, 政治安全, 主权) and
+   sandstorm source, 岱海 Lake Dai).
+POLYSEMY OF 安全. 安全 spans regime security (国家安全, 政治安全, 主权) and
    mundane safety (食品安全, 安全生产, 生态安全). If both 治理 and 安全 lean
-   ecological, their similarity may be entirely mediated by that shared
-   register rather than by regime security.
-
-The controls implemented here:
-
-    sense_partition       split the corpus into political vs ecological
-                          sentences and retrain, giving sense-specific vectors
-    partial_similarity    similarity between a and b with the ecological
-                          component projected out of both
-    mediation_check       compare raw vs ecology-residualised similarity
+   ecological, then that says little about  regime security.
 """
 from __future__ import annotations
 
@@ -97,9 +84,6 @@ def residualise(v: np.ndarray, direction: np.ndarray) -> np.ndarray:
 
 def partial_similarity(wv, a: str, b: str, direction: np.ndarray) -> float:
     """Cosine between a and b after projecting `direction` out of both.
-
-    This is the embedding analogue of a partial correlation: it asks how much of
-    the a-b association survives once the confounding register is removed.
     """
     va, vb = residualise(wv[a], direction), residualise(wv[b], direction)
     na, nb = np.linalg.norm(va), np.linalg.norm(vb)

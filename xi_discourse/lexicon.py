@@ -1,21 +1,10 @@
-"""Analytical term sets.
-
-The original analysis used a two-way split (technocratic vs ideological). The
-corrected design separates the ideological axis into two theoretically distinct
-sets, because they behave very differently in the corpus:
-
+"""Split between:
     IDEOLOGICAL      party-doctrinal vocabulary (party, ideology, Marxism, ...)
     REGIME_SECURITY  regime-survival vocabulary (security, regime, stability, ...)
-
-The abstract's claim is specifically that administrative terms "cluster
-consistently around concepts of regime security", which is a claim about the
-second set, not the first. Keeping them merged confounds the test.
-
-ECOLOGICAL is a control set. 治理 is polysemous in this corpus (political
+    ECOLOGICAL (control set) 治理 is polysemous in this corpus (political
 governance vs environmental remediation) and 安全 spans regime security, food
 safety and ecological safety; the ecological set is used in confounds.py to
-test whether any governance-security link is mediated by that shared register.
-
+test whether any governance-security link is mediated
 ECONOMIC_COOPERATIVE is the comparison set for the Belt and Road module.
 """
 from __future__ import annotations

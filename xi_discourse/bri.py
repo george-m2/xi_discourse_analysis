@@ -1,17 +1,9 @@
-"""Belt and Road: is the initiative framed in security or economic terms?
+"""Is the Belt and Road Initiative framed in security or economic terms?
 
-The abstract argues the study "push[es] back against Western framing of Chinese
-policy initiatives (e.g., Belt and Road) as practical and bureaucratic rather
-than security-driven". That is a directly testable proposition, and the original
-codebase contained no test of it at all -- indeed it could not have run one,
-because jieba's default dictionary splits 一带一路 into 一带 + 一路, so the
-construct did not exist in the model vocabulary. lexicon/userdict.txt fixes the
-segmentation; this module runs the test.
-
-The test is a competition between two framings, not a single similarity:
     security framing  cos(BRI, regime-security centroid)
     economic framing  cos(BRI, economic-cooperative centroid)
-A security-driven reading predicts the first exceeds the second.
+
+Any given security-driven reading of the BRI in literature predicts the first exceeds the second.
 """
 from __future__ import annotations
 

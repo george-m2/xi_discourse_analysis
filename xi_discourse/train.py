@@ -1,10 +1,6 @@
-"""Word2Vec training with genuine reproducibility and multi-seed robustness.
+"""Word2Vec training"
 
-The original model was trained with `seed=42, workers=4`. gensim is only
-deterministic at workers=1: with multiple worker threads the OS schedule
-determines the order of weight updates, so the run cannot be reproduced even
-with a fixed seed. Every headline number here is trained at workers=1, and each
-reported similarity is accompanied by its spread across independent seeds.
+`seed=42, workers=4`
 """
 from __future__ import annotations
 

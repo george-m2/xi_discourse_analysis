@@ -1,4 +1,3 @@
-"""Central configuration: paths, model hyperparameters, and reproducibility settings."""
 from __future__ import annotations
 
 import os
@@ -31,7 +30,7 @@ STOPWORDS_FILE = LEXICON_DIR / "stopwords.txt"
 # NOTE ON REPRODUCIBILITY: gensim is only deterministic with workers=1.
 # With workers>1 the OS thread schedule alters the order of updates, so a fixed
 # `seed` does NOT yield identical vectors. All headline numbers are trained at
-# WORKERS=1. See train.py and README "Reproducibility".
+# WORKERS=1
 W2V_PARAMS = dict(
     vector_size=100,
     window=5,
@@ -51,7 +50,6 @@ N_PERMUTATIONS = 5000
 N_NULL_PAIRS = 20000
 RNG_SEED = 20260908
 
-# --- Diachronic analysis ---
 # 2012 (63 docs) and 2026 (65 docs) are partial years and are excluded from
 # time-sliced training; every retained year has >=400 documents.
 DIACHRONIC_YEARS = tuple(range(2013, 2026))

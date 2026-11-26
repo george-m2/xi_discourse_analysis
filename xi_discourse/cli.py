@@ -1,4 +1,3 @@
-"""Command line entry point: `uv run xi-discourse <command>`."""
 from __future__ import annotations
 
 import argparse
@@ -78,23 +77,10 @@ def cmd_all(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    # Shared options live on a parent parser so they are accepted on both sides
-    # of the subcommand: `xi-discourse --force train` and `xi-discourse train
-    # --force` both work. Declared only on the top-level parser, the trailing
-    # form -- the one anyone types first -- is rejected outright.
-    #
-    # default=SUPPRESS is load-bearing: a subparser sharing a dest writes its
-    # own default over whatever the top-level parser already parsed, so
-    # `--force train` would silently come back force=False. Suppressed
-    # defaults leave the attribute unset instead, and it is filled in below.
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--force", action="store_true",
                         default=argparse.SUPPRESS,
                         help="rebuild cached artefacts")
-    # One comma-separated token rather than nargs="+". A variadic option can
-    # never precede a subcommand: argparse greedily swallows the subcommand
-    # name as another value, leaving `command` unset. A single token is
-    # unambiguous in either position.
     common.add_argument("--seeds", metavar="SEEDS",
                         default=argparse.SUPPRESS,
                         help=f"comma-separated model seeds "

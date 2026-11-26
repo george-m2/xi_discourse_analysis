@@ -5,12 +5,6 @@ space have a non-zero, frequency-dependent baseline. Random word pairs in this
 corpus average ~0.20. Everything here is therefore reported against an explicit
 null, with uncertainty attached.
 
-Provides:
-    null_distribution      random-pair and frequency-matched baselines
-    z_against_null         standardised effect size for an observed mean
-    bootstrap_ci           CI on a mean similarity over term pairs
-    permutation_cluster_test   is a labelled split more separable than chance?
-    seed_spread            mean +/- sd of a similarity across independent seeds
 """
 from __future__ import annotations
 

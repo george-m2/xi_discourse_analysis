@@ -3,21 +3,20 @@
 Cosine similarity is symmetric and measures distributional relatedness, not
 hierarchy. Two concepts standing in a subordinating relation ("governance under
 party leadership") routinely show only moderate cosine, because they modify one
-another rather than substitute for one another. Cosine therefore cannot, on its
-own, test the study's actual claim. This module adds three measures that can.
+another rather than substitute for one another. 
 
-1. SEMANTIC AXIS PROJECTION (after Bolukbasi et al. 2016; Kozlowski, Taddy &
-   Evans 2019, *American Sociological Review*). Construct a bipolar axis --
-   e.g. regime-security vs market-economic -- and project each administrative
-   term onto it. Yields a signed, comparable coordinate rather than a bare
-   pairwise number.
+To get around this:
 
-2. CONDITIONAL CO-OCCURRENCE ASYMMETRY. Subordination is directional: if
+1. Semantic Axis Projection (after Bolukbasi et al. 2016; Kozlowski, Taddy &
+   Evans 2019...). Bipolar axis projected against each administrative
+   term onto it 
+
+2. Subordination is directional if
    governance discourse is structurally embedded in security discourse, then
    P(security | governance) should exceed P(governance | security). This is a
    genuine hierarchy test and is invisible to cosine.
 
-3. NEIGHBOURHOOD COMPOSITION. What share of a term's nearest neighbours belong
+3. What share of a term's nearest neighbours belong
    to each discourse field, benchmarked against frequency-matched control
    words? Answers "what company does this word keep" directly.
 """
